@@ -5,6 +5,13 @@ Projet 1 de Systeme d'exploitation
 
 ## Installation
 
+Cloner le projet
+```shell
+git clone ssh://git@gitlab.ulb.be:30422/alexbien/os-projet-1.git
+ou
+git clone https://gitlab.ulb.be/alexbien/os-projet-1.git
+```
+
 Pour pouvoir avoir les droits d'execution sur le script
 ```shell
 chmod +x ./list-file.sh
