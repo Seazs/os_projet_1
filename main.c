@@ -53,12 +53,13 @@ int main(int argc, char* argv[]) {
         return 1;
     } else if (pid1 == 0) {  // Processus fils 1
         while (fgets(path_image1, sizeof(path_image1) / sizeof(char), stdin) != NULL) {
+            
             // Supprimer le retour à la ligne à la fin du buffer
             size_t len = strlen(path_image1);
-            if (path_image1[len - 1] == '\n') {
+            if (path_image1[len - 1] == '\n' || path_image1[len - 1] == '\r') {
                 path_image1[len - 1] = '\0';
             }
-
+            printf("image1: %s\n", path_image1);
             // vérifier si le fichier existe
             if (access(path_image1, F_OK) == -1) {
                 printf("Le fichier '%s' n'existe pas.\n", path_image1);
@@ -85,15 +86,18 @@ int main(int argc, char* argv[]) {
             return 1;
         } else if (pid2 == 0) {  // Processus fils 2
             while (fgets(path_image2, sizeof(path_image2) / sizeof(char), stdin) != NULL) {
+                
+                
                 // Supprimer le retour à la ligne à la fin du buffer
                 size_t len = strlen(path_image2);
-                if (path_image2[len - 1] == '\n') {
+                printf("dernier char : %c\n", path_image2[len - 1]);
+                if (path_image2[len - 1] == '\n' || path_image2[len - 1] == '\r') {
                     path_image2[len - 1] = '\0';
                 }
-
+                printf("image2: %s\n", path_image2);
                 // vérifier si le fichier existe
-                if (access(path_image1, F_OK) == -1) {
-                    printf("Le fichier '%s' n'existe pas.\n", path_image1);
+                if (access(path_image2, F_OK) == -1) {
+                    printf("Le fichier '%s' n'existe pas.\n", path_image2);
                     continue;
                 }
 

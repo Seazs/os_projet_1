@@ -34,10 +34,12 @@ if [ "$mode" = "interactive" ]; then
     ./img-search "$image" 
 
 elif [ "$mode" = "automatic" ]; then
+
     echo "Mode automatique : Comparaison de toutes les images dans le dossier $database_path avec $image"
-    while IFS= read -r file; do
-        ./img-search "$image"
-    done <<< "$images"
+    ./list-file.sh "$database_path" | ./img-search "$image"
+
+    
+    
 
     #envoie toutes les images du dossier database_path à img-search grace au script list-file
 

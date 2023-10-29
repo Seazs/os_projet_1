@@ -13,8 +13,7 @@ if [ ! -d "$1" ]; then
 fi
 
 # Liste les fichiers dans le dossier spécifié (ignorant les sous-dossiers)
-for file in $(ls -v "$1" 2>/dev/null); do
-
+for file in $(ls -v1 "$1" 2>/dev/null); do
         echo "$1$file"
 done
 
