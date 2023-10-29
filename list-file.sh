@@ -14,9 +14,8 @@ fi
 
 # Liste les fichiers dans le dossier spécifié (ignorant les sous-dossiers)
 for file in $(ls -v "$1" 2>/dev/null); do
-    if [ -f "$file" ]; then
-        echo "$(basename "$file")"
-    fi
+
+        echo "$1$file"
 done
 
 # Fin du script

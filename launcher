@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Déclaration des variables par défaut
+mode="interactive"
+database_path="./img/"
+images=$(./list-file.sh "$database_path")
+
+
+# Analyse des options en ligne de commande
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -i|--interactive)
+            mode="interactive"
+            shift
+            ;;
+        -a|--automatic)
+            mode="automatic"
+            shift
+            ;;
+        *)
+            image="$1"
+            shift
+            if [ -n "$1" ]; then
+                database_path="$1"
+                shift
+            fi
+            ;;
+    esac
+done
+
+# Logique en fonction du mode
+if [ "$mode" = "interactive" ]; then
+    echo "Mode interactif : Veuillez entrer les chemins des images une par une (Ctrl+D pour terminer) :"
+    echo "Image à comparer : $image"
+    echo "dossier actuel : " $(pwd)
+    ./img-search "$image" 
+
+elif [ "$mode" = "automatic" ]; then
+    echo "Mode automatique : Comparaison de toutes les images dans le dossier $database_path avec $image"
+    while IFS= read -r file; do
+        ./img-search "$image"
+    done <<< "$images"
+
+    #envoie toutes les images du dossier database_path à img-search grace au script list-file
+
+fi

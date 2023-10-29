@@ -1,3 +1,4 @@
+//Pour que ANONYMOUS MAP fonctionne
 #define _GNU_SOURCE
 
 #include <stdbool.h>
@@ -28,6 +29,7 @@ int main(int argc, char* argv[]) {
     // Copier le chemin de l'image à comparer dans une variable
     char image_to_compare_path[999];
     strcpy(image_to_compare_path, argv[1]);
+    printf("Image to compare: %s\n", image_to_compare_path);
 
     // Variables pour stocker les chemins d'images
     char path_image1[999] = "";
@@ -64,7 +66,7 @@ int main(int argc, char* argv[]) {
             // Comparer les images
             printf("pid1: %i\n", getpid());
             int return_value = compare_image(image_to_compare_path, path_image1, data);
-            printf("La distance entre les deux images est de : %i\n", return_value);
+            printf("La distance avec l'image '%s' est de : %i\n", path_image1, return_value);
         }
 
         // Terminer le processus fils 1
@@ -90,7 +92,7 @@ int main(int argc, char* argv[]) {
                 // Comparer les images
                 printf("pid2: %i\n", getpid());
                 int return_value = compare_image(image_to_compare_path, path_image2, data);
-                printf("La distance entre les deux images est de : %i\n", return_value);
+                printf("La distance avec l'image '%s' est de : %i\n", path_image2, return_value);
             }
 
             // Terminer le processus fils 2
