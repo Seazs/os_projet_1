@@ -59,6 +59,12 @@ int main(int argc, char* argv[]) {
                 path_image1[len - 1] = '\0';
             }
 
+            // vérifier si le fichier existe
+            if (access(path_image1, F_OK) == -1) {
+                printf("Le fichier '%s' n'existe pas.\n", path_image1);
+                continue;
+            }
+            
             // Attendre que le processus fils 2 ait fini de comparer les images
             int status;
             wait(&status);
@@ -83,6 +89,12 @@ int main(int argc, char* argv[]) {
                 size_t len = strlen(path_image2);
                 if (path_image2[len - 1] == '\n') {
                     path_image2[len - 1] = '\0';
+                }
+
+                // vérifier si le fichier existe
+                if (access(path_image1, F_OK) == -1) {
+                    printf("Le fichier '%s' n'existe pas.\n", path_image1);
+                    continue;
                 }
 
                 // Attendre que le processus fils 1 ait fini de comparer les images

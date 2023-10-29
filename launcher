@@ -30,9 +30,7 @@ done
 
 # Logique en fonction du mode
 if [ "$mode" = "interactive" ]; then
-    echo "Mode interactif : Veuillez entrer les chemins des images une par une (Ctrl+D pour terminer) :"
-    echo "Image à comparer : $image"
-    echo "dossier actuel : " $(pwd)
+    echo "Mode interactif : Veuillez entrer les chemins des images une par une (2 fois Ctrl+D pour terminer) :"
     ./img-search "$image" 
 
 elif [ "$mode" = "automatic" ]; then
