@@ -94,7 +94,6 @@ int main(int argc, char* argv[]) {
                 if (path_image2[len - 1] == '\n' || path_image2[len - 1] == '\r') {
                     path_image2[len - 1] = '\0';
                 }
-                printf("image2: %s\n", path_image2);
                 // vérifier si le fichier existe
                 if (access(path_image2, F_OK) == -1) {
                     printf("Le fichier '%s' n'existe pas.\n", path_image2);
