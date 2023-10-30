@@ -10,6 +10,9 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#define READ 0
+#define WRITE 1
+
 // Structure pour stocker les données partagées entre les processus
 struct shared_data {
     int min_distance;
@@ -32,8 +35,9 @@ int main(int argc, char* argv[]) {
     printf("Image to compare: %s\n", image_to_compare_path);
 
     // Variables pour stocker les chemins d'images
-    char path_image1[999] = "";
-    char path_image2[999] = "";
+    char path_image[999] = "";
+    
+
 
     // Créer la région de mémoire partagée
     struct shared_data* data = mmap(NULL, sizeof(struct shared_data), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANON, -1, 0);
@@ -46,73 +50,114 @@ int main(int argc, char* argv[]) {
     data->min_distance = 999999;
     strcpy(data->min_distance_image_path, "");
 
+    //créer les pipes pour la communication entre le père et les fils
+    int pipe1[2];
+    int pipe2[2];
+    if (pipe(pipe1) == -1) {
+        perror("pipe1()");
+        exit(1);
+    }
+    if (pipe(pipe2) == -1) {
+        perror("pipe2()");
+        exit(1);
+    }
+
     // Créer les deux processus fils
     pid_t pid1 = fork();
     if (pid1 < 0) {  // Erreur de fork
         perror("fork()");
         return 1;
     } else if (pid1 == 0) {  // Processus fils 1
-        while (fgets(path_image1, sizeof(path_image1) / sizeof(char), stdin) != NULL) {
-            
-            // Supprimer le retour à la ligne à la fin du buffer
-            size_t len = strlen(path_image1);
-            if (path_image1[len - 1] == '\n' || path_image1[len - 1] == '\r') {
-                path_image1[len - 1] = '\0';
-            }
-            printf("image1: %s\n", path_image1);
-            // vérifier si le fichier existe
-            if (access(path_image1, F_OK) == -1) {
-                printf("Le fichier '%s' n'existe pas.\n", path_image1);
-                continue;
-            }
-            
-            // Attendre que le processus fils 2 ait fini de comparer les images
-            int status;
-            wait(&status);
+        
+        // Fermer les pipes inutiles
+        close(pipe1[WRITE]);
+        close(pipe2[WRITE]);
+        close(pipe2[READ]);
+        // Lire le chemin de l'image à comparer dans le pipe
 
-            // Comparer les images
-            printf("pid1: %i\n", getpid());
-            int return_value = compare_image(image_to_compare_path, path_image1, data);
-            printf("La distance avec l'image '%s' est de : %i\n", path_image1, return_value);
-        }
+        //char path_image[999];
+
+        if(read(pipe1[READ], path_image, sizeof(path_image)) == 0){
+            printf("pipe1 est vide\n");
+        }        
+        printf("path_image process 1: %s\n", path_image);
+        
+        // Attendre que le processus fils 2 ait fini de comparer les images
+        int status;
+        wait(&status);
+
+        // Comparer les images
+        printf("pid1: %i\n", getpid());
+        int return_value = compare_image(image_to_compare_path, path_image, data);
+        printf("La distance avec l'image '%s' est de : %i\n", path_image, return_value);
 
         // Terminer le processus fils 1
         exit(0);
-    } else {  // Processus père
+    } else {  // Processus père       
         // Créer le deuxième processus fils
         pid_t pid2 = fork();
         if (pid2 < 0) {  // Erreur de fork
             perror("fork()");
             return 1;
-        } else if (pid2 == 0) {  // Processus fils 2
-            while (fgets(path_image2, sizeof(path_image2) / sizeof(char), stdin) != NULL) {
-                
-                
-                // Supprimer le retour à la ligne à la fin du buffer
-                size_t len = strlen(path_image2);
-                printf("dernier char : %c\n", path_image2[len - 1]);
-                if (path_image2[len - 1] == '\n' || path_image2[len - 1] == '\r') {
-                    path_image2[len - 1] = '\0';
-                }
-                // vérifier si le fichier existe
-                if (access(path_image2, F_OK) == -1) {
-                    printf("Le fichier '%s' n'existe pas.\n", path_image2);
-                    continue;
-                }
+        } else if (pid2 == 0) {  // Processus fils 2 
 
-                // Attendre que le processus fils 1 ait fini de comparer les images
-                int status;
-                wait(&status);
+            //fermer les pipes inutiles
+            close(pipe1[READ]);
+            close(pipe2[WRITE]);
+            close(pipe1[WRITE]);
 
-                // Comparer les images
-                printf("pid2: %i\n", getpid());
-                int return_value = compare_image(image_to_compare_path, path_image2, data);
-                printf("La distance avec l'image '%s' est de : %i\n", path_image2, return_value);
+            // Lire le chemin de l'image à comparer dans le pipe
+            if(read(pipe2[READ], path_image, sizeof(path_image)) == 0){
+                printf("pipe2 est vide\n");
             }
+
+            printf("path_image process 2: %s\n", path_image);
+
+            // Attendre que le processus fils 1 ait fini de comparer les images
+            int status;
+            wait(&status);
+
+            // Comparer les images
+            printf("pid2: %i\n", getpid());
+            int return_value = compare_image(image_to_compare_path, path_image, data);
+            printf("La distance avec l'image '%s' est de : %i\n", path_image, return_value);
+            
 
             // Terminer le processus fils 2
             exit(0);
         } else {  // Processus père
+            int active_child_num = 1;
+
+            while (fgets(path_image, sizeof(path_image) / sizeof(char), stdin) != NULL){
+                // Supprimer le retour à la ligne à la fin du buffer
+                size_t len = strlen(path_image);
+                
+                if (path_image[len - 1] == '\n' || path_image[len - 1] == '\r') {
+                    path_image[len - 1] = '\0';
+                }
+                printf("image: %s\n", path_image);
+                // vérifier si le fichier existe
+                if (access(path_image, F_OK) == -1) {
+                    printf("Le fichier '%s' n'existe pas.\n", path_image);
+                    continue;
+                }
+                // Écrire le chemin de l'image dans le pipe
+                if (active_child_num == 1){
+                    close(pipe1[READ]);
+                    if(write(pipe1[1], path_image, sizeof(path_image)) == 0){
+                        printf("pipe1 est vide\n");
+                    }
+                    active_child_num = 2;
+                } else {
+                    close(pipe2[READ]);
+                    if (write(pipe2[1], path_image, sizeof(path_image)) == 0){
+                        printf("pipe2 est vide\n");
+                    }
+                    active_child_num = 1;
+                }
+
+            }
+
             // Attendre la fin des deux processus fils
             int status1, status2;
             waitpid(pid1, &status1, 0);
@@ -139,6 +184,9 @@ int main(int argc, char* argv[]) {
 int compare_image(char path_image1[999], char path_image2[999], struct shared_data* data) {
     int return_value = -1;
     // Utilisation du programme img-dist qui prend en paramètre deux images et qui retourne la distance entre les deux
+
+    printf("image1: %s\n", path_image1);
+    printf("image2: %s\n", path_image2);
 
     // Fork pour exécuter le programme img-dist
     pid_t pid = fork();
