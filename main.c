@@ -119,7 +119,11 @@ int main(int argc, char* argv[]) {
             waitpid(pid2, &status2, 0);
 
             // Afficher le chemin de l'image avec la distance minimale
-            printf("Most similar image found: '%s' with a distance of %i.\n", data->min_distance_image_path, data->min_distance);
+            if (data->min_distance_image_path[0] != '\0'){
+                printf("Most similar image found: '%s' with a distance of %i.\n", data->min_distance_image_path, data->min_distance);
+            } else {
+                printf("No similar image found (no comparison could be performed successfully).\n");
+            }
         }
     }
 
