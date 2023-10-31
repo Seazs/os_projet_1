@@ -36,7 +36,9 @@ if [ "$mode" = "interactive" ]; then
 elif [ "$mode" = "automatic" ]; then
 
     echo "Mode automatique : Comparaison de toutes les images dans le dossier $database_path avec $image"
+    
     ./list-file.sh "$database_path" | ./img-search "$image"
+
 
     
     
