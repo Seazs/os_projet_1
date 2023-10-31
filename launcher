@@ -21,7 +21,7 @@ while [[ "$#" -gt 0 ]]; do
             image="$1"
             shift
             if [ -n "$1" ]; then
-                database_path="$1"
+                database_path="$1/"
                 shift
             fi
             ;;
