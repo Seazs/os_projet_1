@@ -223,8 +223,7 @@ int compare_image(char path_image1[999], char path_image2[999], struct shared_da
         perror("fork()");
         return 1;
     } else if (pid == 0) {  // Processus fils
-        // Modifier le PATH pour inclure le répertoire de img-dist
-        setenv("PATH", "./img-dist", 1);
+        
 
         // Exécution de la commande img-dist avec les deux chemins d'images en paramètres
         char* argument_list[] = {"img-dist", path_image1, path_image2, NULL};

@@ -4,7 +4,10 @@
 mode="interactive"
 database_path="./img/"
 images=$(./list-file.sh "$database_path")
+img_dist_path="./img-dist/"
 
+#modifie la variable PATH pour ajouter le dossier img-dist
+export PATH="$img_dist_path:$PATH"
 
 # Analyse des options en ligne de commande
 while [[ "$#" -gt 0 ]]; do
