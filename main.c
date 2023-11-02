@@ -185,7 +185,6 @@ int main(int argc, char* argv[]) {
             close(pipe1[WRITE]);
             close(pipe2[WRITE]);
 
-            close(STDIN_FILENO);
 
             // Attendre la fin des processus fils
             int status;
