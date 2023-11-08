@@ -87,7 +87,6 @@ int main(int argc, char* argv[]) {
             child_process(pipe2, pipe1, image_to_compare_path, path_image, sizeof(path_image), data);
 
         } else {  // Processus père
-            
             parent_process(pid1, pid2, pipe1, pipe2, path_image, sizeof(path_image), data);
         }
     }
@@ -97,7 +96,6 @@ int main(int argc, char* argv[]) {
         perror("munmap()");
         exit(1);
     }
-
 
     return 0;
 }
@@ -129,20 +127,23 @@ void child_process(int child_pipe[2], int other_child_pipe[2], char image_to_com
 }
 
 void parent_process(pid_t pid1, pid_t pid2, int pipe1[2], int pipe2[2], char image_path[999], size_t len_path_image, struct shared_data* data){
-    // Fermer les pipes inutiles
-            
+    
+    //gestion des signaux        
     signal(SIGINT, signal_handler);
     signal(SIGPIPE, signal_handler);
 
     int active_child_num = 1;
     int nb_image_process1 = 0;
     int nb_image_process2 = 0;
+
+    // Fermer les pipes inutiles
     close(pipe1[READ]);
     close(pipe2[READ]);
+
+    //boucle pour lire les chemins d'images sur l'entrée standard
     while (sigint_received == 0 && fgets(image_path, len_path_image, stdin) != NULL){
         // Supprimer le retour à la ligne à la fin du buffer
         size_t len = strlen(image_path);
-        
         if (image_path[len - 1] == '\n' || image_path[len - 1] == '\r') {
             image_path[len - 1] = '\0';
         }
@@ -153,7 +154,7 @@ void parent_process(pid_t pid1, pid_t pid2, int pipe1[2], int pipe2[2], char ima
             printf("Le fichier '%s' n'existe pas.\n", image_path);
             continue;
         }
-        // Écrire le chemin de l'image dans le pipe
+        // Écrire le chemin de l'image alternativement dans les deux pipes
         printf("active_child_num: %i\n", active_child_num);
         if (active_child_num == 1){
             if(write(pipe1[1], image_path, len_path_image) == 0){
