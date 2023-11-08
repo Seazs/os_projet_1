@@ -132,6 +132,7 @@ int main(int argc, char* argv[]) {
             // Fermer les pipes inutiles
             
             signal(SIGINT, signal_handler);
+            signal(SIGPIPE, signal_handler);
 
             int active_child_num = 1;
             int nb_image_process1 = 0;
@@ -140,14 +141,12 @@ int main(int argc, char* argv[]) {
             close(pipe2[READ]);
             while (sigint_received == 0 && fgets(path_image, sizeof(path_image), stdin) != NULL){
 
-
                 // Supprimer le retour à la ligne à la fin du buffer
                 size_t len = strlen(path_image);
                 
                 if (path_image[len - 1] == '\n' || path_image[len - 1] == '\r') {
                     path_image[len - 1] = '\0';
                 }
-
 
                 printf("image got on input: %s\n", path_image);
                 // vérifier si le fichier existe
@@ -173,11 +172,7 @@ int main(int argc, char* argv[]) {
                 }
 
             }
-
-            
-
-            //ferme stdin si c'est pas déjà fait
-            
+      
 
 
             // Fermer les pipes pour terminer les processus fils 
@@ -264,6 +259,8 @@ void signal_handler(int signal_number) {
     }
     else if(signal_number == SIGPIPE){
         printf("Signal SIGPIPE reçu\n");
+        printf("L'un des fils s'est terminé de manière inattendue et a fermé sa lecture des pipes\n");
+        exit(1);
     }else{
         printf("Signal reçu inconnu\n");
     }
