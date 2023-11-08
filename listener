@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# écoute l'entrée standard et envoie les chemins des images sur la sortie standard
+# en rajoutant le prefixe de la database recu en argument
+
+while read line
+do
+    echo "$1$line"
+done

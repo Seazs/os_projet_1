@@ -2,7 +2,8 @@
 
 # Déclaration des variables par défaut
 mode="interactive"
-database_path="./img/"
+interactif_database_path="" #chemin de la database par défaut en mode interactif
+automatic_database_path="./img/" #chemin de la database par défaut en mode automatique
 img_dist_path="./img-dist/"
 
 #modifie la variable PATH pour ajouter le dossier img-dist
@@ -13,10 +14,18 @@ while [[ "$#" -gt 0 ]]; do
     case $1 in
         -i|--interactive)
             mode="interactive"
+            if [ -n "$3" ]; then #check si on recu un argument pour le chemin de la database
+                interactif_database_path="$3/"
+                shift
+            fi
             shift
             ;;
         -a|--automatic)
             mode="automatic"
+            if [ -n "$3" ]; then #check si on recu un argument pour le chemin de la database
+                database_path="$3/"
+                shift
+            fi
             shift
             ;;
         *)
@@ -33,13 +42,14 @@ done
 # Logique en fonction du mode
 if [ "$mode" = "interactive" ]; then
     echo "Mode interactif : Veuillez entrer les chemins des images une par une (Ctrl+D pour terminer) :"
-    ./img-search "$image" 
+    #envoie les chemins des images à img-search grace au script listener qui rajoute le préfix de la database
+    ./listener "$interactif_database_path" | ./img-search "$image"  
 
 elif [ "$mode" = "automatic" ]; then
 
     echo "Mode automatique : Comparaison de toutes les images dans le dossier $database_path avec $image"
     
-    ./list-file.sh "$database_path" | ./img-search "$image"
+    ./list-file.sh "$automatic_database_path" | ./img-search "$image"
 
 
     
