@@ -259,7 +259,7 @@ void signal_handler(int signal_number) {
     }
     else if(signal_number == SIGPIPE){
         printf("Signal SIGPIPE reçu\n");
-        printf("L'un des fils s'est terminé de manière inattendue et a fermé sa lecture des pipes\n");
+        printf("L'un des fils s'est terminé de manière inattendue et a fermé sa lecture des pipes\n C'est un erreur critique\n");
         exit(1);
     }else{
         printf("Signal reçu inconnu\n");
