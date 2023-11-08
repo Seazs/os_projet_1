@@ -14,19 +14,23 @@ while [[ "$#" -gt 0 ]]; do
     case $1 in
         -i|--interactive)
             mode="interactive"
-            if [ -n "$3" ]; then #check si on recu un argument pour le chemin de la database
-                interactif_database_path="$3/"
+            shift #shift pour passer à l'argument suivant
+            image="$1"
+            shift
+            if [ -n "$1" ]; then #check si on recu un argument pour le chemin de la database
+                interactif_database_path="$1/"
                 shift
             fi
-            shift
             ;;
         -a|--automatic)
             mode="automatic"
-            if [ -n "$3" ]; then #check si on recu un argument pour le chemin de la database
-                database_path="$3/"
+            shift #shift pour passer à l'argument suivant
+            image="$1"
+            shift 
+            if [ -n "$1" ]; then #check si on recu un argument pour le chemin de la database
+                automatic_database_path="$1/"
                 shift
             fi
-            shift
             ;;
         *)
             image="$1"
@@ -43,12 +47,13 @@ done
 if [ "$mode" = "interactive" ]; then
     echo "Mode interactif : Veuillez entrer les chemins des images une par une (Ctrl+D pour terminer) :"
     #envoie les chemins des images à img-search grace au script listener qui rajoute le préfix de la database
+    echo "interactif database path : $interactif_database_path"
     ./listener "$interactif_database_path" | ./img-search "$image"  
 
 elif [ "$mode" = "automatic" ]; then
 
     echo "Mode automatique : Comparaison de toutes les images dans le dossier $database_path avec $image"
-    
+    echo "automatique database path : $automatic_database_path"
     ./list-file.sh "$automatic_database_path" | ./img-search "$image"
 
 
