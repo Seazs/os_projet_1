@@ -14,7 +14,10 @@ fi
 
 # Liste les fichiers dans le dossier spécifié (ignorant les sous-dossiers)
 for file in $(ls -v1 "$1" 2>/dev/null); do
+    # vérifie si le fichier n'est pas un dossier
+    if [ ! -d "$1$file" ]; then
         echo "$1$file"
+    fi
 done
 
 # Fin du script

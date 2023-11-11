@@ -33,12 +33,8 @@ while [[ "$#" -gt 0 ]]; do
             fi
             ;;
         *)
-            image="$1"
-            shift
-            if [ -n "$1" ]; then
-                interactif_database_path="$1/"
-                shift
-            fi
+            echo "Veuillez entrer un mode valide : -i ou --interactive pour le mode interactif, -a ou --automatic pour le mode automatique"
+            exit 1
             ;;
     esac
 done
