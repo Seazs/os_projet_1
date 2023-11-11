@@ -36,7 +36,7 @@ while [[ "$#" -gt 0 ]]; do
             image="$1"
             shift
             if [ -n "$1" ]; then
-                database_path="$1/"
+                interactif_database_path="$1/"
                 shift
             fi
             ;;
@@ -52,7 +52,7 @@ if [ "$mode" = "interactive" ]; then
 
 elif [ "$mode" = "automatic" ]; then
 
-    echo "Mode automatique : Comparaison de toutes les images dans le dossier $database_path avec $image"
+    echo "Mode automatique : Comparaison de toutes les images dans le dossier $automatic_database_path avec $image"
     echo "automatique database path : $automatic_database_path"
     ./list-file.sh "$automatic_database_path" | ./img-search "$image"
 
