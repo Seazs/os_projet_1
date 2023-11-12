@@ -215,7 +215,7 @@ void compare_image(char path_image1[999], char path_image2[999], struct shared_d
 
         // Afficher une erreur si l'exécution de la commande a échoué
         if (return_value < 0) {
-            perror("Fils: execlp()");
+            perror("Fils: execvp()");
             exit(1);
         }
     } else {  // Processus père
