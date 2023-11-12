@@ -4,8 +4,11 @@ OBJS=
 
 all: img-search
 
-img-search: main.c $(OBJS)
-	$(CC) $(OPT) $(OPT) main.c -o img-search $(OBJS)
+img-search: img-search.c $(OBJS)
+	$(CC) $(OPT) $(OPT) img-search.c -o img-search $(OBJS)
 
 %.o: %.c %.h
 	$(CC) $(OPT) $(DBG_OPT) -c $< -o $@
+
+clean:
+	rm -f img-search $(OBJS)
