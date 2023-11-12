@@ -21,7 +21,7 @@ struct shared_data {
     char min_distance_image_path[999];
 };
 
-// Fonction qui compare deux images et retourne la distance entre les deux
+// Fonction qui compare deux images et enregistre la distance entre les deux dans les données partagées
 void compare_image(char path_image1[999], char path_image2[999], struct shared_data* data);
 // Fonction qui gère les signaux
 void signal_handler(int signal_number);
@@ -101,29 +101,28 @@ int main(int argc, char* argv[]) {
 }
 
 void child_process(int child_pipe[2], int other_child_pipe[2], char image_to_compare[999], char image_path[999], size_t len_path_image, struct shared_data* data){
-    printf("pid1: %i\n", getpid());
+    
 
-        // Fermer les pipes inutiles
-        close(child_pipe[WRITE]);
-        close(other_child_pipe[READ]);
-        close(other_child_pipe[WRITE]);
+    // Fermer les pipes inutiles
+    close(child_pipe[WRITE]);
+    close(other_child_pipe[READ]);
+    close(other_child_pipe[WRITE]);
 
-        // Lire le chemin de l'image à comparer dans le pipe
+    // Lire le chemin de l'image à comparer dans le pipe
 
-        while(read(child_pipe[READ], image_path, len_path_image) > 0){   
-            printf("pid1: %i\n", getpid());              
-            printf("image read on pipe1: %s\n", image_path);           
+    while(read(child_pipe[READ], image_path, len_path_image) > 0){   
+        printf("pid: %i\n", getpid());                     
 
-            // Comparer les images
-            
-            compare_image(image_to_compare, image_path, data);
-            
-        }
-        // Fermer les pipes inutiles
-        close(child_pipe[READ]);
+        // Comparer les images
+        
+        compare_image(image_to_compare, image_path, data);
+        
+    }
+    // Fermer les pipes inutiles
+    close(child_pipe[READ]);
 
-        // Terminer le processus fils 1
-        exit(0);
+    // Terminer le processus fils 1
+    exit(0);
 }
 
 void parent_process(pid_t pid1, pid_t pid2, int pipe1[2], int pipe2[2], char image_path[999], size_t len_path_image, struct shared_data* data){
